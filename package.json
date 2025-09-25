@@ -1,0 +1,32 @@
+{
+  "name": "fitzone-gimnasio",
+  "version": "1.0.0",
+  "description": "Sistema de gestión para FitZone Gimnasio",
+  "main": "servidor.js",
+  "scripts": {
+    "start": "node servidor.js",
+    "dev": "nodemon servidor.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gimnasio",
+    "fitness",
+    "reservas",
+    "postgresql",
+    "express"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "dependencies": {
+    "@types/pg": "^8.15.5",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

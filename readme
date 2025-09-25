@@ -1,0 +1,870 @@
+# Sistema de Gestión FitZone Gimnasio - Guía Completa para Estudiantes
+
+## ¿Qué es este proyecto?
+
+FitZone es un **sistema web completo** para gestionar un gimnasio. Imagínate que tienes un gimnasio y necesitas:
+- Mostrar tus servicios a los clientes
+- Que la gente reserve clases online
+- Calcular calorías y rutinas personalizadas
+- Administrar horarios y cupos
+- Guardar información de clientes
+
+Este proyecto hace exactamente eso. Es como tener una página web inteligente que se conecta con una base de datos.
+
+## Arquitectura del Sistema (¿Cómo está construido?)
+
+El proyecto tiene **3 partes principales**:
+
+### 1. **Frontend** (Lo que ve el usuario)
+- **index.html**: La página principal del gimnasio
+- **reservas.html**: Sistema específico para hacer reservas
+- **CSS y JavaScript**: Para que se vea bonito y sea interactivo
+
+### 2. **Backend** (El cerebro del sistema)
+- **servidor.js**: Un programa en Node.js que maneja toda la lógica
+- **APIs REST**: Endpoints para comunicarse con el frontend
+
+### 3. **Base de Datos**
+- **PostgreSQL**: Donde se guarda toda la información (clientes, reservas, clases, etc.)
+
+## Lenguajes de Programación Utilizados
+
+### 1. JavaScript
+**¿Qué es?** JavaScript es un lenguaje de programación que originalmente se creó para hacer páginas web interactivas. Hoy en día se usa tanto en el navegador (frontend) como en servidores (backend).
+
+**En este proyecto se usa para:**
+- **Frontend**: Hacer que los botones funcionen, validar formularios, mostrar/ocultar elementos
+- **Backend**: Crear el servidor web con Node.js
+- **Comunicación**: Conectar el frontend con el backend mediante peticiones HTTP
+
+**¿Por qué JavaScript?**
+```javascript
+// Ejemplo: El mismo lenguaje en frontend y backend
+// Frontend (navegador)
+document.getElementById('fecha').addEventListener('change', function() {
+    cargarHorarios();
+});
+
+// Backend (servidor)
+app.get('/api/horarios/:fecha', async (req, res) => {
+    const horarios = await obtenerHorarios(req.params.fecha);
+    res.json(horarios);
+});
+```
+- **Ventaja principal**: Un solo lenguaje para todo el proyecto
+- **Fácil aprendizaje**: Si ya sabes JavaScript del navegador, puedes hacer servidores
+- **Comunidad grande**: Mucha documentación y ayuda disponible
+
+### 2. HTML (HyperText Markup Language)
+**¿Qué es?** HTML NO es un lenguaje de programación, es un **lenguaje de marcado** que define la estructura de una página web.
+
+**En este proyecto:**
+```html
+<!-- Define la estructura -->
+<section id="reservas" class="section">
+    <h2>Reserva tu Clase</h2>
+    <form id="reservaForm">
+        <input type="text" id="nombre" required>
+        <button type="submit">Confirmar</button>
+    </form>
+</section>
+```
+
+**¿Por qué HTML?**
+- **Estándar universal**: Todos los navegadores lo entienden
+- **Semántico**: Cada etiqueta tiene un significado específico
+- **Accesible**: Compatible con lectores de pantalla y herramientas de accesibilidad
+
+### 3. CSS (Cascading Style Sheets)
+**¿Qué es?** CSS tampoco es programación, es un **lenguaje de estilos** que define cómo se ve una página web.
+
+**En este proyecto:**
+```css
+/* Hace que los botones se vean profesionales */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+```
+
+**¿Por qué CSS?**
+- **Separación de responsabilidades**: HTML estructura, CSS diseña
+- **Responsive design**: Se adapta automáticamente a móviles y tablets
+- **Animaciones**: Hace la página más atractiva e interactiva
+
+### 4. SQL (Structured Query Language)
+**¿Qué es?** SQL es un lenguaje específicamente diseñado para trabajar con bases de datos relacionales.
+
+**En este proyecto:**
+```sql
+-- Obtener todas las reservas de hoy
+SELECT 
+    r.id,
+    c.nombre as cliente_nombre,
+    a.nombre as actividad_nombre,
+    cp.fecha,
+    cp.hora_inicio
+FROM reservas r
+JOIN clientes c ON r.cliente_id = c.id
+JOIN clases_programadas cp ON r.clase_programada_id = cp.id
+JOIN horarios_base hb ON cp.horario_base_id = hb.id
+JOIN actividades a ON hb.actividad_id = a.id
+WHERE cp.fecha = CURRENT_DATE;
+```
+
+**¿Por qué SQL?**
+- **Optimizado para datos**: Diseñado específicamente para manejar información estructurada
+- **Relaciones complejas**: Puede conectar diferentes tablas fácilmente
+- **Estándar**: Funciona en casi todas las bases de datos
+
+## ¿Qué es un Framework y Por Qué se Usan?
+
+### Definición Simple
+Un **framework** es como una "caja de herramientas pre-construida" que incluye código ya escrito y probado para tareas comunes en programación.
+
+**Analogía del mundo real:**
+Imagínate que quieres construir una casa:
+- **Sin framework**: Tienes que hacer los ladrillos, mezclar el cemento, diseñar los planos, etc.
+- **Con framework**: Ya tienes ladrillos, cemento, planos base, y solo te concentras en personalizar tu casa
+
+### Ventajas de Usar Frameworks
+```javascript
+// Sin framework (código largo y complejo)
+const http = require('http');
+const url = require('url');
+const server = http.createServer((req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    if (parsedUrl.pathname === '/api/actividades' && req.method === 'GET') {
+        // Muchas líneas de código...
+    }
+});
+
+// Con framework Express.js (simple y claro)
+const express = require('express');
+const app = express();
+
+app.get('/api/actividades', (req, res) => {
+    // Solo la lógica específica
+    res.json(actividades);
+});
+```
+
+**Beneficios:**
+1. **Menos código**: El framework maneja las partes complicadas
+2. **Menos errores**: Código probado por miles de desarrolladores
+3. **Más rápido**: No reinventar la rueda
+4. **Mejores prácticas**: Siguiendo patrones profesionales
+
+## Tecnologías y Frameworks del Proyecto
+
+### Node.js (Entorno de Ejecución)
+```javascript
+// Node.js permite esto en el servidor:
+const fs = require('fs'); // Leer archivos
+const http = require('http'); // Crear servidores web
+console.log('JavaScript ejecutándose en el servidor!');
+```
+
+**¿Qué es Node.js?** 
+Node.js NO es un lenguaje, es un **entorno de ejecución** que permite usar JavaScript fuera del navegador (en servidores, escritorio, etc.).
+
+**¿Por qué Node.js?**
+- **Un solo lenguaje**: JavaScript tanto en frontend como backend
+- **Rápido**: Excelente para aplicaciones web que manejan muchas conexiones
+- **NPM**: Miles de paquetes/librerías disponibles gratuitamente
+- **Comunidad**: Muy popular, mucha documentación y soporte
+
+### Express.js (Framework Web)
+```javascript
+const express = require('express');
+const app = express();
+
+// Sin Express.js necesitarías ~20 líneas para esto:
+app.get('/api/actividades', (req, res) => {
+    res.json({ mensaje: 'Hola mundo' });
+});
+
+app.listen(3000, () => {
+    console.log('Servidor funcionando en puerto 3000');
+});
+```
+
+**¿Qué es Express.js?**
+Express.js es un **framework web minimalista** para Node.js. Es como un "asistente personal" que maneja las tareas complicadas de crear un servidor web.
+
+**¿Por qué Express.js?**
+- **Simplicidad**: Convierte tareas complejas en 2-3 líneas de código
+- **Middlewares**: Sistema de "plugins" para funcionalidades adicionales
+- **Routing**: Manejo fácil de diferentes URLs (/api/reservas, /api/clientes, etc.)
+- **Estándar**: Es el framework más usado para Node.js
+
+**Comparación práctica:**
+```javascript
+// Node.js puro (complicado)
+const http = require('http');
+const url = require('url');
+
+const server = http.createServer((req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const path = parsedUrl.pathname;
+    const method = req.method;
+    
+    // Configurar headers
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    if (path === '/api/actividades' && method === 'GET') {
+        // Lógica para obtener actividades
+        res.writeHead(200);
+        res.end(JSON.stringify(actividades));
+    } else {
+        res.writeHead(404);
+        res.end(JSON.stringify({ error: 'Not Found' }));
+    }
+});
+
+// Express.js (simple y claro)
+const express = require('express');
+const app = express();
+
+app.use(express.json()); // Maneja JSON automáticamente
+app.use(cors()); // Maneja CORS automáticamente
+
+app.get('/api/actividades', (req, res) => {
+    res.json(actividades); // Express maneja todo lo demás
+});
+```
+
+### Otras Librerías y Herramientas
+
+#### CORS (Cross-Origin Resource Sharing)
+```javascript
+const cors = require('cors');
+app.use(cors());
+```
+
+**¿Qué resuelve?**
+Por seguridad, los navegadores bloquean peticiones entre diferentes dominios. CORS permite que tu frontend (http://localhost:3000) se comunique con tu backend (puerto diferente).
+
+**Sin CORS:** ❌ `Error: Access blocked by CORS policy`
+**Con CORS:** ✅ Comunicación libre entre frontend y backend
+
+#### Nodemon (Herramienta de Desarrollo)
+```json
+"scripts": {
+    "dev": "nodemon servidor.js"
+}
+```
+
+**¿Qué hace?**
+Reinicia automáticamente el servidor cada vez que guardas cambios en el código.
+
+**Sin nodemon:** Tienes que parar y reiniciar el servidor manualmente cada vez
+**Con nodemon:** Los cambios se ven inmediatamente
+
+#### Path (Módulo Nativo de Node.js)
+```javascript
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+```
+
+**¿Para qué?**
+Maneja rutas de archivos de forma compatible entre Windows, Mac y Linux.
+
+## Cómo Trabajan Todas las Tecnologías Juntas
+
+### El Stack Completo (PERN Stack)
+**P**ostgreSQL + **E**xpress.js + **R**eact/HTML + **N**ode.js
+
+```mermaid
+Frontend (HTML/CSS/JS)
+       ↕ HTTP Requests
+Backend (Node.js + Express.js)  
+       ↕ SQL Queries
+Database (PostgreSQL)
+```
+
+### Flujo de Datos Paso a Paso
+
+1. **Usuario interactúa** (HTML + CSS + JavaScript)
+```javascript
+// Frontend - JavaScript en el navegador
+document.getElementById('reservar').addEventListener('click', async () => {
+    const datos = obtenerDatosFormulario();
+    await hacerReserva(datos);
+});
+```
+
+2. **Frontend hace petición** (JavaScript fetch API)
+```javascript
+// Petición HTTP al servidor
+const response = await fetch('/api/reservas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(datosReserva)
+});
+```
+
+3. **Backend recibe petición** (Node.js + Express.js)
+```javascript
+// Servidor - JavaScript en Node.js
+app.post('/api/reservas', async (req, res) => {
+    const { cliente_id, clase_id } = req.body;
+    // Procesar la reserva...
+});
+```
+
+4. **Backend consulta base de datos** (SQL)
+```sql
+-- Base de datos - SQL
+INSERT INTO reservas (cliente_id, clase_programada_id, fecha_reserva) 
+VALUES ($1, $2, NOW()) 
+RETURNING id;
+```
+
+5. **Respuesta vuelve al frontend** (JSON)
+```javascript
+// Respuesta del servidor al frontend
+res.json({ 
+    success: true, 
+    reserva_id: 123,
+    mensaje: 'Reserva creada exitosamente' 
+});
+```
+
+### Arquitectura en Capas
+
+```
+┌─────────────────────┐
+│   PRESENTACIÓN      │ ← HTML/CSS/JavaScript (lo que ve el usuario)
+│   (Frontend)        │
+├─────────────────────┤
+│   LÓGICA DE         │ ← Node.js + Express.js (reglas de negocio)
+│   NEGOCIO           │
+│   (Backend)         │ 
+├─────────────────────┤
+│   ACCESO A DATOS    │ ← Librería 'pg' (conexión a base de datos)
+├─────────────────────┤
+│   BASE DE DATOS     │ ← PostgreSQL (almacenamiento persistente)
+│   (PostgreSQL)      │
+└─────────────────────┘
+```
+
+### ¿Por Qué Esta Combinación de Tecnologías?
+
+#### Ventaja #1: Un Solo Lenguaje Principal
+```javascript
+// Mismo lenguaje (JavaScript) en ambos lados:
+
+// Frontend
+function validarFormulario(datos) {
+    if (!datos.nombre || datos.nombre.length < 2) {
+        return false;
+    }
+    return true;
+}
+
+// Backend  
+function validarReserva(datos) {
+    if (!datos.cliente_id || !datos.clase_id) {
+        throw new Error('Datos incompletos');
+    }
+}
+```
+
+#### Ventaja #2: Escalabilidad
+- **PostgreSQL**: Maneja millones de registros
+- **Node.js**: Excelente para muchas conexiones simultáneas  
+- **Express.js**: Arquitectura modular fácil de expandir
+
+#### Ventaja #3: Ecosistema Completo
+```json
+// package.json - Miles de paquetes disponibles
+{
+  "dependencies": {
+    "express": "^4.18.2",        // Framework web
+    "pg": "^8.16.3",             // Conexión PostgreSQL  
+    "cors": "^2.8.5",            // Manejo CORS
+    "bcrypt": "^5.1.0",          // Encriptación (para futuro)
+    "jsonwebtoken": "^9.0.0",    // Autenticación (para futuro)
+    "nodemailer": "^6.9.0"       // Emails (para futuro)
+  }
+}
+```
+
+## Comparación con Otras Tecnologías
+
+### ¿Por Qué No Otros Lenguajes/Frameworks?
+
+#### Python + Django vs Node.js + Express
+```python
+# Python/Django (más verboso)
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def crear_reserva(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        # más código...
+        return JsonResponse({'status': 'success'})
+```
+
+```javascript
+// Node.js/Express (más conciso)
+app.post('/api/reservas', (req, res) => {
+    const data = req.body;
+    // lógica...
+    res.json({ status: 'success' });
+});
+```
+
+#### PHP vs Node.js
+- **PHP**: Cada petición crea un nuevo proceso (lento para muchos usuarios)
+- **Node.js**: Un solo proceso maneja todas las peticiones (más eficiente)
+
+#### MySQL vs PostgreSQL
+- **MySQL**: Más simple, pero limitado para consultas complejas
+- **PostgreSQL**: Más potente, mejor para aplicaciones profesionales
+
+### Resumen de Decisiones Tecnológicas
+
+| Tecnología | Alternativa | ¿Por qué la elegimos? |
+|------------|-------------|----------------------|
+| JavaScript | Python/Java | Un lenguaje para todo el stack |
+| Node.js | PHP/Django | Mejor rendimiento, mismo lenguaje |
+| Express.js | Koa.js/Fastify | Más maduro, más documentación |
+| PostgreSQL | MySQL/MongoDB | Mejor para datos relacionales complejos |
+| HTML/CSS | Templates | Control total del diseño |
+
+## Arquitectura del Código Explicada con pg (Librería de Conexión)
+```javascript
+const { Pool } = require('pg');
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'proyectotic',
+    password: 'tu_password',
+    port: 5432,
+});
+```
+
+**¿Qué es 'pg'?**
+'pg' es una **librería** (no exactamente un framework) que permite que Node.js se comunique con PostgreSQL.
+
+**¿Por qué PostgreSQL?**
+- **Relacional**: Perfecto para datos estructurados (clientes, reservas, horarios)
+- **ACID**: Garantiza consistencia de datos (importante para reservas)
+- **Escalable**: Maneja desde 10 hasta millones de usuarios
+- **Gratuito**: Open source y muy confiable
+- **Características avanzadas**: JSON, arrays, funciones, triggers
+
+**Ejemplo de por qué necesitamos una base de datos:**
+```javascript
+// Problema: Datos en memoria se pierden al reiniciar servidor
+let reservas = []; // ¡Se pierde si se reinicia el servidor!
+
+// Solución: Base de datos persistente
+const result = await pool.query(
+    'SELECT * FROM reservas WHERE fecha = $1', 
+    ['2024-01-15']
+);
+// Los datos están seguros aunque se reinicie el servidor
+```
+
+### PostgreSQL
+```javascript
+const { Pool } = require('pg');
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'proyectotic',
+    password: 'agusbdl3',
+    port: 5432,
+});
+```
+
+**¿Qué es?** Una base de datos relacional (como Excel pero muchísimo más poderoso).
+**¿Por qué PostgreSQL?** Es gratuito, muy confiable, y maneja bien datos complejos como horarios, reservas, etc.
+
+### CORS (Cross-Origin Resource Sharing)
+```javascript
+app.use(cors());
+```
+
+**¿Para qué?** Permite que tu página web (frontend) se comunique con el servidor (backend) sin problemas de seguridad del navegador.
+
+## Instalación Paso a Paso
+
+### Requisitos Previos
+1. **Node.js** (versión 14 o superior)
+2. **PostgreSQL** instalado y ejecutándose
+3. Un editor de código (Visual Studio Code recomendado)
+
+### Pasos de Instalación
+
+#### 1. Clonar/Descargar el proyecto
+```bash
+# Si tienes git instalado
+git clone [url-del-proyecto]
+cd fitzone-gimnasio
+```
+
+#### 2. Instalar dependencias de Node.js
+```bash
+npm install
+```
+
+Esto instala automáticamente todo lo que está en `package.json`:
+- **express**: El framework web
+- **pg**: Para conectarse a PostgreSQL
+- **cors**: Para manejar peticiones entre dominios
+- **nodemon**: Para desarrollo (reinicia el servidor automáticamente)
+
+#### 3. Configurar la Base de Datos
+
+**Crear la base de datos:**
+```sql
+CREATE DATABASE proyectotic;
+```
+
+**Crear las tablas necesarias** (esquema básico):
+```sql
+-- Tabla de actividades
+CREATE TABLE actividades (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    duracion_minutos INTEGER,
+    cupo_maximo INTEGER,
+    precio_mensual DECIMAL(10,2),
+    estado VARCHAR(20) DEFAULT 'activa'
+);
+
+-- Tabla de clientes
+CREATE TABLE clientes (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    telefono VARCHAR(20),
+    estado VARCHAR(20) DEFAULT 'activo'
+);
+
+-- Tabla de horarios base
+CREATE TABLE horarios_base (
+    id SERIAL PRIMARY KEY,
+    actividad_id INTEGER REFERENCES actividades(id),
+    dia_semana INTEGER, -- 1=Lunes, 7=Domingo
+    hora_inicio TIME,
+    hora_fin TIME
+);
+
+-- Tabla de clases programadas
+CREATE TABLE clases_programadas (
+    id SERIAL PRIMARY KEY,
+    horario_base_id INTEGER REFERENCES horarios_base(id),
+    fecha DATE,
+    hora_inicio TIME,
+    hora_fin TIME,
+    cupo_disponible INTEGER,
+    instructor_id INTEGER,
+    estado VARCHAR(20) DEFAULT 'programada'
+);
+
+-- Tabla de reservas
+CREATE TABLE reservas (
+    id SERIAL PRIMARY KEY,
+    cliente_id INTEGER REFERENCES clientes(id),
+    clase_programada_id INTEGER REFERENCES clases_programadas(id),
+    fecha_reserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(20) DEFAULT 'confirmada'
+);
+```
+
+#### 4. Configurar conexión a la base de datos
+En `servidor.js`, ajusta estos valores:
+```javascript
+const pool = new Pool({
+    user: 'tu_usuario_postgres',
+    host: 'localhost',
+    database: 'proyectotic',
+    password: 'tu_contraseña',
+    port: 5432,
+});
+```
+
+#### 5. Ejecutar el servidor
+```bash
+# Para desarrollo (con nodemon)
+npm run dev
+
+# Para producción
+npm start
+```
+
+## Estructura del Código Explicada
+
+### Backend (servidor.js)
+
+#### Configuración Inicial
+```javascript
+const express = require('express');
+const { Pool } = require('pg');
+const cors = require('cors');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+```
+- Importa las librerías necesarias
+- Crea la aplicación Express
+- Define el puerto (3000 por defecto)
+
+#### Middleware
+```javascript
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+```
+
+**¿Qué hace cada línea?**
+1. `cors()`: Permite peticiones desde cualquier origen
+2. `express.json()`: Permite recibir datos JSON en las peticiones
+3. `express.static()`: Sirve archivos estáticos (HTML, CSS, imágenes)
+
+#### Rutas API (Endpoints)
+
+**Obtener actividades:**
+```javascript
+app.get('/api/actividades', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT id, nombre, descripcion, duracion_minutos, cupo_maximo, precio_mensual 
+            FROM actividades 
+            WHERE estado = 'activa'
+            ORDER BY nombre
+        `);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error obteniendo actividades:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+```
+
+**¿Qué hace?**
+- Cuando alguien hace una petición GET a `/api/actividades`
+- Consulta la base de datos para obtener todas las actividades activas
+- Devuelve los datos en formato JSON
+- Si hay error, devuelve un mensaje de error
+
+**Crear reserva:**
+```javascript
+app.post('/api/reservas', async (req, res) => {
+    const client = await pool.connect();
+    
+    try {
+        await client.query('BEGIN'); // Inicia transacción
+        
+        const { cliente_id, clase_programada_id } = req.body;
+        
+        // Verificaciones...
+        // Crear reserva...
+        
+        await client.query('COMMIT'); // Confirma cambios
+        res.json({ success: true });
+        
+    } catch (err) {
+        await client.query('ROLLBACK'); // Deshace cambios si hay error
+        res.status(400).json({ error: err.message });
+    } finally {
+        client.release(); // Libera la conexión
+    }
+});
+```
+
+**¿Por qué usar transacciones?**
+Las transacciones aseguran que si algo falla a mitad de proceso, todos los cambios se deshagan. Por ejemplo, si se crea una reserva pero falla al actualizar el cupo, todo se revierte.
+
+### Frontend
+
+#### HTML Estructura
+El HTML define la estructura visual:
+```html
+<section id="reservas" class="section">
+    <div class="reservas-content">
+        <div class="card">
+            <h2>Selecciona tu Actividad</h2>
+            <div class="actividades-grid" id="actividades">
+                <!-- Se llena con JavaScript -->
+            </div>
+        </div>
+    </div>
+</section>
+```
+
+#### CSS Estilos
+Hace que todo se vea profesional:
+```css
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+```
+
+#### JavaScript Interactividad
+```javascript
+async function cargarActividades() {
+    try {
+        const response = await fetch('/api/actividades');
+        const actividades = await response.json();
+        // Mostrar actividades en la página
+        mostrarActividades(actividades);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+```
+
+**¿Qué hace este código?**
+1. Hace una petición HTTP GET al servidor
+2. Convierte la respuesta a JSON
+3. Llama a otra función para mostrar los datos
+4. Si hay error, lo muestra en la consola
+
+## Flujo Completo del Sistema
+
+### Ejemplo: Usuario hace una reserva
+
+1. **Usuario abre la página** → El navegador descarga index.html
+2. **JavaScript se ejecuta** → Hace petición a `/api/actividades`
+3. **Servidor recibe petición** → Consulta PostgreSQL
+4. **Base de datos responde** → Servidor envía JSON al navegador
+5. **Navegador muestra actividades** → Usuario puede seleccionar
+6. **Usuario llena formulario** → JavaScript valida datos
+7. **Usuario envía reserva** → Petición POST a `/api/reservas`
+8. **Servidor procesa** → Verifica cupos, crea cliente, hace reserva
+9. **Base de datos actualizada** → Servidor confirma éxito
+10. **Usuario ve confirmación** → ¡Reserva completada!
+
+## Características Técnicas Importantes
+
+### Programación Asíncrona
+```javascript
+async function crearReserva() {
+    const response = await fetch('/api/reservas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datosReserva)
+    });
+}
+```
+
+**¿Por qué async/await?**
+Las operaciones de red y base de datos toman tiempo. Sin async/await, la página se "congelaría" esperando respuestas.
+
+### Validación de Datos
+```javascript
+if (!pesoLevantado || !repeticiones) {
+    resultado.innerHTML = '<div style="color: #dc3545;">Por favor completa todos los campos</div>';
+    return;
+}
+```
+
+Siempre validamos datos tanto en el cliente (JavaScript) como en el servidor (Node.js) para evitar errores y problemas de seguridad.
+
+### Responsive Design
+```css
+@media (max-width: 768px) {
+    .reservas-content {
+        grid-template-columns: 1fr;
+    }
+}
+```
+
+El sitio se adapta automáticamente a teléfonos y tablets.
+
+## Comandos Útiles para Desarrollo
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar en modo desarrollo (se reinicia automáticamente)
+npm run dev
+
+# Ejecutar en producción
+npm start
+
+# Ver logs de la base de datos
+tail -f /var/log/postgresql/postgresql.log
+```
+
+## Posibles Problemas y Soluciones
+
+### Error: "Cannot connect to database"
+**Solución:** Verificar que PostgreSQL esté ejecutándose:
+```bash
+# En Linux/Mac
+sudo service postgresql start
+
+# En Windows
+net start postgresql
+```
+
+### Error: "Port 3000 already in use"
+**Solución:** Cambiar el puerto o terminar el proceso:
+```bash
+# Encontrar proceso usando puerto 3000
+lsof -i :3000
+
+# Terminar proceso
+kill -9 [PID]
+```
+
+### Error: "Module not found"
+**Solución:** Reinstalar dependencias:
+```bash
+rm -rf node_modules
+npm install
+```
+
+## Próximos Pasos para Mejorar
+
+1. **Autenticación**: Login para administradores
+2. **Notificaciones**: Emails de confirmación
+3. **Pagos**: Integración con sistemas de pago
+4. **Dashboard**: Panel administrativo más completo
+5. **App móvil**: Versión para smartphones
+
+## Recursos para Aprender Más
+
+- **Node.js**: https://nodejs.org/docs
+- **Express.js**: https://expressjs.com/guide
+- **PostgreSQL**: https://www.postgresql.org/docs
+- **JavaScript moderno**: https://javascript.info
+- **CSS Grid/Flexbox**: https://css-tricks.com/snippets/css/complete-guide-grid
+
+## Conclusión
+
+Este proyecto demuestra una aplicación web completa "full-stack" que integra:
+- **Frontend** profesional y responsivo
+- **Backend** robusto con API REST
+- **Base de datos** bien estructurada
+- **Funcionalidades** del mundo real
+
+Es un excelente ejemplo para entender cómo funciona una aplicación web moderna y profesional.
+
+---
+
+*¡Recuerda que la programación se aprende practicando! No tengas miedo de experimentar y modificar el código para ver qué pasa.*
