@@ -1,0 +1,900 @@
+# Git y Control de Versiones - Guía Completa para el Proyecto FitZone
+
+## ¿Qué es Git y Por Qué Existe?
+
+### El Problema que Resuelve Git
+
+Imagina que estás escribiendo un ensayo importante y decides hacer esto:
+
+```
+ensayo_final.docx
+ensayo_final_version2.docx
+ensayo_final_version2_corregido.docx
+ensayo_final_version2_corregido_FINAL.docx
+ensayo_final_version2_corregido_FINAL_DEFINITIVO.docx
+```
+
+¿Te suena familiar? Ahora imagina esto mismo pero con código de programación y trabajando con 5 personas más. ¡Sería un caos total!
+
+**Git resuelve estos problemas:**
+- Historial completo de todos los cambios
+- Trabajo colaborativo sin pisarse
+- Posibilidad de volver a versiones anteriores
+- Ramas para experimentar sin afectar el código principal
+
+### ¿Qué es Git Exactamente?
+
+**Git** es un **sistema de control de versiones distribuido**. Vamos por partes:
+
+- **Sistema**: Un programa/herramienta
+- **Control de versiones**: Rastrea cambios en archivos a lo largo del tiempo
+- **Distribuido**: Cada desarrollador tiene una copia completa del historial
+
+**Analogía Simple:**
+Git es como una "máquina del tiempo" para tu código que también te permite trabajar en "universos paralelos" (ramas) y fusionarlos cuando estés listo.
+
+## Conceptos Fundamentales de Git
+
+### 1. Repositorio (Repository)
+Es el "contenedor" donde Git guarda todo el historial de tu proyecto.
+
+```bash
+# Crear un nuevo repositorio
+git init fitzone-gimnasio
+```
+
+### 2. Commit
+Un "commit" es como una "fotografía" de tu código en un momento específico.
+
+```bash
+# Un commit típico
+git commit -m "Agregar calculadora de calorías al sistema"
+```
+
+**Cada commit tiene:**
+- Un mensaje descriptivo
+- Un hash único (ID): `a1b2c3d4e5f6...`
+- Fecha y autor
+- Los cambios exactos realizados
+
+### 3. Ramas (Branches)
+Las ramas son "líneas de desarrollo" paralelas.
+
+```
+main     A---B---C---D
+              \
+feature       E---F---G
+```
+
+**¿Por qué usar ramas?**
+- Experimentar sin afectar el código principal
+- Trabajar en diferentes características simultáneamente
+- Aislar bugs para arreglarlos
+
+### 4. Working Directory, Staging Area, Repository
+
+```
+Working Directory    Staging Area    Repository
+     (Archivos         (Preparación)   (Commits)
+     modificados)           |              |
+         |                  |              |
+    git add ------>    git commit ------> Historia
+```
+
+## Comandos Básicos de Git Explicados
+
+### Configuración Inicial
+```bash
+# Configurar tu identidad (solo una vez)
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"
+
+# Verificar configuración
+git config --list
+```
+
+### Inicializar y Clonar Proyectos
+```bash
+# Crear nuevo repositorio
+git init
+
+# Clonar proyecto existente (como FitZone)
+git clone https://github.com/usuario/fitzone-gimnasio.git
+```
+
+### El Ciclo Básico de Trabajo
+
+#### 1. Ver Estado de Archivos
+```bash
+# ¿Qué archivos han cambiado?
+git status
+
+# Salida típica:
+# On branch main
+# Changes not staged for commit:
+#   modified:   servidor.js
+# Untracked files:
+#   nueva-calculadora.js
+```
+
+#### 2. Agregar Archivos al Staging
+```bash
+# Agregar archivo específico
+git add servidor.js
+
+# Agregar todos los archivos modificados
+git add .
+
+# Agregar solo archivos JavaScript
+git add *.js
+```
+
+#### 3. Hacer Commit
+```bash
+# Commit con mensaje descriptivo
+git commit -m "Implementar validación de formulario de reservas"
+
+# Commit más detallado (abre editor)
+git commit
+```
+
+**Buenas prácticas para mensajes:**
+- Usar presente: "Agregar" no "Agregué"
+- Ser específico: "Arreglar bug en cálculo de calorías" no "Fix bug"
+- Primera línea máximo 50 caracteres
+
+#### 4. Ver Historial
+```bash
+# Historial completo
+git log
+
+# Historial resumido
+git log --oneline
+
+# Historial gráfico
+git log --graph --oneline --all
+```
+
+### Trabajo con Ramas
+
+#### Crear y Cambiar Ramas
+```bash
+# Crear nueva rama
+git branch feature/calculadora-imc
+
+# Cambiar a la rama
+git checkout feature/calculadora-imc
+
+# Crear y cambiar en un comando
+git checkout -b feature/calculadora-imc
+```
+
+#### Fusionar Ramas
+```bash
+# Volver a la rama principal
+git checkout main
+
+# Fusionar la feature
+git merge feature/calculadora-imc
+```
+
+### Sincronización con Servidor Remoto
+
+```bash
+# Ver repositorios remotos
+git remote -v
+
+# Traer cambios del servidor
+git pull origin main
+
+# Enviar cambios al servidor
+git push origin main
+
+# Primera vez enviando una rama nueva
+git push -u origin feature/calculadora-imc
+```
+
+## Git en el Proyecto FitZone
+
+### Estructura Típica del Repositorio FitZone
+
+```
+fitzone-gimnasio/
+├── .git/                 # Carpeta de Git (no tocar)
+├── .gitignore           # Archivos que Git debe ignorar
+├── package.json         # Dependencias del proyecto
+├── package-lock.json    # Versiones exactas de dependencias
+├── servidor.js          # Archivo principal del backend
+├── public/              # Archivos estáticos
+│   ├── index.html
+│   ├── reservas.html
+│   └── styles.css
+├── README.md            # Documentación del proyecto
+└── database/            # Scripts de base de datos
+    └── schema.sql
+```
+
+### Configurar .gitignore para FitZone
+
+El archivo `.gitignore` le dice a Git qué archivos NO debe rastrear:
+
+```bash
+# .gitignore para proyecto FitZone
+
+# Dependencias de Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de configuración local
+.env
+.env.local
+config/database-local.js
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos del IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Base de datos local
+database.db
+*.sqlite
+
+# Archivos temporales
+temp/
+tmp/
+```
+
+### Flujo de Desarrollo para FitZone
+
+#### Escenario: Agregar Nueva Funcionalidad
+
+```bash
+# 1. Asegurarse de estar actualizado
+git checkout main
+git pull origin main
+
+# 2. Crear rama para nueva feature
+git checkout -b feature/sistema-membresias
+
+# 3. Desarrollar la funcionalidad
+# ... escribir código ...
+
+# 4. Agregar archivos modificados
+git add .
+
+# 5. Hacer commit
+git commit -m "Implementar sistema de membresías
+
+- Agregar tabla membresias en base de datos
+- Crear API endpoints para gestionar membresías
+- Implementar interfaz para seleccionar membresía
+- Agregar validación de membresía activa en reservas"
+
+# 6. Subir la rama al servidor
+git push -u origin feature/sistema-membresias
+
+# 7. Crear Pull Request (en GitHub/GitLab)
+# 8. Después de revisión, fusionar con main
+```
+
+#### Escenario: Arreglar Bug Urgente
+
+```bash
+# 1. Crear rama desde main para hotfix
+git checkout main
+git checkout -b hotfix/calculo-calorias-error
+
+# 2. Arreglar el bug
+# ... editar código ...
+
+# 3. Probar que funciona
+npm test  # o probar manualmente
+
+# 4. Commit del arreglo
+git add .
+git commit -m "Arreglar error en cálculo de calorías para mujeres
+
+El multiplicador estaba incorrecto en la fórmula de Harris-Benedict
+para mujeres, causando resultados 20% más bajos.
+
+Fixes #123"
+
+# 5. Fusionar directamente a main (bugs críticos)
+git checkout main
+git merge hotfix/calculo-calorias-error
+git push origin main
+
+# 6. Eliminar rama temporal
+git branch -d hotfix/calculo-calorias-error
+```
+
+## Trabajo en Equipo con Git
+
+### Roles Típicos en el Proyecto FitZone
+
+```
+┌─────────────────┐
+│   Lead Developer │ ← Puede fusionar a main, revisar código
+├─────────────────┤
+│   Frontend Dev   │ ← Trabaja en HTML/CSS/JavaScript del cliente
+├─────────────────┤
+│   Backend Dev    │ ← Trabaja en servidor.js y APIs
+├─────────────────┤
+│   Database Dev   │ ← Diseña esquemas, queries optimizados
+└─────────────────┘
+```
+
+### Flujo de Trabajo en Equipo (GitFlow)
+
+#### Ramas Principales
+- **main/master**: Código en producción (siempre funcional)
+- **develop**: Código en desarrollo (integración continua)
+
+#### Ramas Temporales
+- **feature/***: Nuevas funcionalidades
+- **hotfix/***: Arreglos urgentes
+- **release/***: Preparación para lanzamiento
+
+```bash
+# Ejemplo de flujo completo en FitZone
+
+# Developer 1: Trabajando en reservas
+git checkout develop
+git pull origin develop
+git checkout -b feature/sistema-reservas-avanzado
+
+# Developer 2: Trabajando en calculadoras
+git checkout develop  
+git pull origin develop
+git checkout -b feature/calculadora-proteinas
+
+# Developer 3: Arreglando bug crítico
+git checkout main
+git checkout -b hotfix/reservas-duplicadas
+```
+
+### Resolución de Conflictos
+
+Los conflictos ocurren cuando dos personas modifican las mismas líneas de código:
+
+```javascript
+// Tu código
+function calcularCalorias(peso, altura, edad) {
+    const bmr = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad);
+    return bmr * 1.375; // Factor de actividad ligera
+}
+
+// Código de tu compañero
+function calcularCalorias(peso, altura, edad) {
+    const bmr = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad);
+    return bmr * 1.55; // Factor de actividad moderada
+}
+```
+
+**Git mostrará:**
+```bash
+<<<<<<< HEAD
+    return bmr * 1.375; // Factor de actividad ligera
+=======
+    return bmr * 1.55; // Factor de actividad moderada
+>>>>>>> feature/mejoras-calculadora
+```
+
+**Resolución:**
+```javascript
+// Después de discutir con el equipo, decidimos hacer configurable
+function calcularCalorias(peso, altura, edad, factorActividad = 1.375) {
+    const bmr = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad);
+    return bmr * factorActividad;
+}
+```
+
+```bash
+# Después de resolver conflictos
+git add archivo-resuelto.js
+git commit -m "Resolver conflicto en cálculo de calorías
+
+Hacer configurable el factor de actividad para mayor flexibilidad"
+```
+
+### Buenas Prácticas para Trabajo en Equipo
+
+#### 1. Comunicación en Commits
+```bash
+# Malo
+git commit -m "fix"
+git commit -m "cambios"
+git commit -m "asd"
+
+# Bueno
+git commit -m "Arreglar validación de email en formulario de registro"
+git commit -m "Optimizar consulta SQL para obtener horarios disponibles"
+git commit -m "Agregar test unitario para calculadora de IMC"
+```
+
+#### 2. Commits Pequeños y Frecuentes
+```bash
+# Malo: Un commit gigante
+git add .
+git commit -m "Implementar todo el sistema de reservas completo"
+
+# Bueno: Commits incrementales
+git add models/reserva.js
+git commit -m "Crear modelo de datos para reservas"
+
+git add controllers/reservas.js  
+git commit -m "Implementar controlador de reservas con validaciones"
+
+git add views/reservas.html
+git commit -m "Crear interfaz de usuario para reservas"
+
+git add tests/reservas.test.js
+git commit -m "Agregar tests para sistema de reservas"
+```
+
+#### 3. Pull Requests / Merge Requests
+
+**Template de Pull Request para FitZone:**
+```markdown
+## ¿Qué hace este PR?
+Implementa el sistema de cálculo de macronutrientes en la calculadora de calorías
+
+## Cambios incluidos
+- [ ] Nueva función `calcularMacronutrientes()` en `servidor.js`
+- [ ] Interfaz actualizada en `index.html` 
+- [ ] Estilos CSS para mostrar resultados de macros
+- [ ] Tests unitarios para las nuevas funciones
+
+## Cómo probar
+1. Ir a la sección "Calculadoras"
+2. Llenar el formulario de calorías
+3. Verificar que se muestren proteínas, carbos y grasas
+4. Probar con diferentes objetivos (déficit, mantenimiento, volumen)
+
+## Screenshots
+[Incluir capturas de pantalla]
+
+## Checklist
+- [ ] Código probado localmente
+- [ ] Tests pasan
+- [ ] Sin conflictos con main
+- [ ] Documentación actualizada si es necesario
+```
+
+## Comandos Avanzados y Útiles
+
+### Deshacer Cambios
+
+```bash
+# Deshacer cambios no guardados (¡CUIDADO! Se pierden los cambios)
+git checkout -- archivo.js
+
+# Deshacer último commit (mantiene cambios en working directory)
+git reset --soft HEAD~1
+
+# Deshacer último commit (elimina cambios)
+git reset --hard HEAD~1
+
+# Volver a un commit específico
+git reset --hard a1b2c3d4
+```
+
+### Stash (Guardar Cambios Temporalmente)
+```bash
+# Guardar cambios sin hacer commit
+git stash
+
+# Ver lista de stashes
+git stash list
+
+# Aplicar último stash
+git stash pop
+
+# Guardar stash con mensaje
+git stash push -m "Cambios temporales en calculadora"
+```
+
+### Buscar en el Historial
+```bash
+# Buscar commits que contengan una palabra
+git log --grep="calculadora"
+
+# Ver quien modificó cada línea de un archivo
+git blame servidor.js
+
+# Buscar cuando se introdujo un bug
+git bisect start
+```
+
+### Etiquetas (Tags) para Versiones
+```bash
+# Crear etiqueta para versión
+git tag v1.0.0
+
+# Crear etiqueta con mensaje
+git tag -a v1.1.0 -m "Versión 1.1.0 - Sistema de membresías"
+
+# Enviar etiquetas al servidor
+git push --tags
+```
+
+## Herramientas Visuales y Plataformas
+
+### GitHub
+**Características para FitZone:**
+- Hosting gratuito de repositorios
+- Pull Requests con revisión de código
+- Issues para reportar bugs
+- Actions para automatización (CI/CD)
+- Wiki para documentación
+
+```bash
+# Configurar repositorio remoto en GitHub
+git remote add origin https://github.com/tu-usuario/fitzone-gimnasio.git
+git push -u origin main
+```
+
+### GitLab
+Similar a GitHub pero con más características gratuitas para equipos privados.
+
+### Interfaces Gráficas
+- **Visual Studio Code**: Git integrado
+- **GitKraken**: Cliente visual potente
+- **SourceTree**: Cliente gratuito de Atlassian
+- **GitHub Desktop**: Cliente oficial de GitHub
+
+## Casos de Uso Específicos del Proyecto FitZone
+
+### Escenario 1: Nueva Calculadora de Fitness
+
+```bash
+# 1. Crear rama feature
+git checkout -b feature/calculadora-imc
+
+# 2. Crear archivos necesarios
+touch public/js/calculadora-imc.js
+
+# 3. Implementar funcionalidad
+# ... codificar ...
+
+# 4. Agregar al index.html
+# ... modificar HTML ...
+
+# 5. Agregar estilos
+# ... modificar CSS ...
+
+# 6. Probar funcionalidad
+# Abrir navegador y verificar
+
+# 7. Commit paso a paso
+git add public/js/calculadora-imc.js
+git commit -m "Crear función base para calculadora de IMC"
+
+git add public/index.html
+git commit -m "Integrar calculadora de IMC en página principal"
+
+git add public/styles.css  
+git commit -m "Agregar estilos para calculadora de IMC"
+
+# 8. Push y Pull Request
+git push -u origin feature/calculadora-imc
+```
+
+### Escenario 2: Bug en Producción
+
+```bash
+# 1. Crear hotfix desde main
+git checkout main
+git pull origin main
+git checkout -b hotfix/reservas-horario-invalido
+
+# 2. Identificar el problema
+git log --oneline public/reservas.html
+git show a1b2c3d4  # Ver cambios específicos
+
+# 3. Arreglar el bug
+# ... editar código ...
+
+# 4. Probar el arreglo
+npm start
+# Verificar que el bug esté arreglado
+
+# 5. Commit descriptivo
+git add .
+git commit -m "Arreglar validación de horarios en reservas
+
+Problema: Los usuarios podían reservar clases en horarios pasados
+Solución: Agregar validación de fecha/hora actual vs horario seleccionado
+
+Fixes #456"
+
+# 6. Fusionar directo a main (es un hotfix crítico)
+git checkout main
+git merge hotfix/reservas-horario-invalido
+git push origin main
+
+# 7. Actualizar develop también
+git checkout develop
+git merge main
+git push origin develop
+
+# 8. Limpiar rama temporal
+git branch -d hotfix/reservas-horario-invalido
+```
+
+### Escenario 3: Colaboración en Base de Datos
+
+```bash
+# Developer A: Crea nueva tabla
+git checkout -b feature/tabla-instructores
+
+# Crea archivo SQL
+echo "CREATE TABLE instructores (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    especialidad VARCHAR(50),
+    email VARCHAR(100) UNIQUE
+);" > database/create_instructores.sql
+
+git add database/create_instructores.sql
+git commit -m "Crear tabla instructores en base de datos"
+
+# Developer B: Agrega datos iniciales (trabaja en paralelo)
+git checkout develop
+git checkout -b feature/datos-instructores
+
+# Crea archivo con datos
+echo "INSERT INTO instructores (nombre, especialidad, email) VALUES 
+('Ana García', 'Yoga', 'ana@fitzone.uy'),
+('Carlos López', 'CrossFit', 'carlos@fitzone.uy');" > database/seed_instructores.sql
+
+git add database/seed_instructores.sql
+git commit -m "Agregar datos iniciales de instructores"
+```
+
+## Resolución de Problemas Comunes
+
+### Problema 1: "Your branch is behind"
+```bash
+# Mensaje típico
+Your branch is behind 'origin/main' by 3 commits
+
+# Solución
+git pull origin main
+```
+
+### Problema 2: "Please commit or stash changes"
+```bash
+# Tienes cambios sin guardar y necesitas cambiar de rama
+
+# Opción 1: Hacer commit
+git add .
+git commit -m "WIP: Cambios en progreso"
+
+# Opción 2: Usar stash
+git stash
+git checkout otra-rama
+git stash pop
+```
+
+### Problema 3: "Merge conflict"
+```bash
+# Git te dice hay conflictos
+Auto-merging servidor.js
+CONFLICT (content): Merge conflict in servidor.js
+
+# 1. Abrir archivo y resolver manualmente
+# 2. Eliminar marcadores de conflicto <<<< ==== >>>>
+# 3. Probar que funcione
+# 4. Finalizar merge
+git add servidor.js
+git commit -m "Resolver conflicto en servidor.js"
+```
+
+### Problema 4: Commit al Branch Equivocado
+```bash
+# Hiciste commit en main en lugar de feature branch
+
+# 1. Crear branch desde el commit actual
+git branch feature/mi-feature
+
+# 2. Volver main al commit anterior
+git reset --hard HEAD~1
+
+# 3. Cambiar al branch correcto
+git checkout feature/mi-feature
+```
+
+## Automatización con Git Hooks
+
+### Pre-commit Hook para FitZone
+Crear archivo `.git/hooks/pre-commit`:
+
+```bash
+#!/bin/sh
+# Hook que se ejecuta antes de cada commit
+
+echo "Ejecutando checks pre-commit..."
+
+# Verificar sintaxis de JavaScript
+npm run lint
+if [ $? -ne 0 ]; then
+    echo "Error de linting. Corrige los errores antes del commit."
+    exit 1
+fi
+
+# Ejecutar tests
+npm test
+if [ $? -ne 0 ]; then
+    echo "Tests fallaron. Corrige antes del commit."
+    exit 1
+fi
+
+echo "Pre-commit checks pasaron. Procediendo con commit..."
+```
+
+### CI/CD con GitHub Actions
+Crear archivo `.github/workflows/fitzone-ci.yml`:
+
+```yaml
+name: FitZone CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: proyectotic
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Check code style
+      run: npm run lint
+```
+
+## Mejores Prácticas para el Proyecto FitZone
+
+### Estructura de Branches Recomendada
+
+```
+main                    A---D---G---J    (Solo releases estables)
+  |                          /   /   /
+develop                 B---C---E---F---H---I    (Integración continua)
+                            |       |       |
+feature/reservas                C       |       |
+                                        |       |
+feature/calculadoras                    F       |
+                                                |
+hotfix/bug-critico                              I
+```
+
+### Mensajes de Commit Semánticos
+
+```bash
+# Tipos de commits para FitZone
+feat: Nueva funcionalidad
+fix: Arreglo de bug
+docs: Cambios en documentación
+style: Cambios de formato/estilo
+refactor: Refactorización de código
+test: Agregar/modificar tests
+chore: Tareas de mantenimiento
+
+# Ejemplos
+git commit -m "feat(calculadoras): agregar calculadora de masa corporal magra"
+git commit -m "fix(reservas): corregir validación de horarios disponibles"  
+git commit -m "docs(readme): actualizar instrucciones de instalación"
+git commit -m "style(css): mejorar responsive design en móviles"
+```
+
+### Versionado Semántico
+```bash
+# Formato: MAJOR.MINOR.PATCH
+v1.0.0  # Versión inicial estable
+v1.0.1  # Bug fix (no rompe compatibilidad)
+v1.1.0  # Nueva feature (no rompe compatibilidad)  
+v2.0.0  # Cambios que rompen compatibilidad
+
+# Crear releases
+git tag -a v1.1.0 -m "Versión 1.1.0
+
+Nuevas características:
+- Sistema de membresías premium
+- Calculadora de macronutrientes
+- Reservas con instructor específico
+
+Bug fixes:
+- Arreglar cálculo de calorías para mujeres
+- Corregir validación de horarios pasados"
+
+git push --tags
+```
+
+## Conclusión
+
+Git es una herramienta esencial para cualquier proyecto de programación, especialmente para proyectos como FitZone donde múltiples desarrolladores trabajan juntos. Los beneficios principales son:
+
+1. **Historial completo**: Nunca pierdes trabajo importante
+2. **Colaboración eficiente**: Múltiples personas pueden trabajar sin conflictos
+3. **Experimentación segura**: Ramas para probar ideas sin riesgo
+4. **Backup distribuido**: Cada desarrollador tiene una copia completa
+5. **Trazabilidad**: Sabes exactamente quién cambió qué y cuándo
+
+### Comandos Esenciales de Memoria
+
+```bash
+# Setup inicial
+git clone <url>
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"
+
+# Flujo básico diario
+git status
+git add .
+git commit -m "Mensaje descriptivo"
+git push
+
+# Trabajo con ramas
+git checkout -b nueva-rama
+git checkout main
+git merge nueva-rama
+
+# Sincronización
+git pull
+git push
+```
+
+### Recursos para Seguir Aprendiendo
+
+- **Pro Git Book**: https://git-scm.com/book (gratis y completo)
+- **GitHub Guides**: https://guides.github.com/
+- **Interactive Git Tutorial**: https://learngitbranching.js.org/
+- **Git Cheat Sheet**: https://education.github.com/git-cheat-sheet-education.pdf
+
+### Próximos Pasos
+
+1. **Practicar diariamente**: Git se aprende usándolo
+2. **Configurar herramientas visuales**: GitHub Desktop o VS Code
+3. **Implementar CI/CD**: Automatizar tests y deployments
+4. **Establecer flujo de trabajo**: Definir proceso con el equipo
+5. **Documentar procesos**: Crear guías específicas para tu proyecto
+
+La clave del éxito con Git es la consistencia y las buenas prácticas desde el principio. ¡Tu proyecto FitZone estará mucho mejor organizado y será más fácil de mantener!
